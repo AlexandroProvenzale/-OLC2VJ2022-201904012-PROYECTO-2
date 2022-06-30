@@ -25,7 +25,7 @@ def classify(num):
 
 def main():
     # titulo
-    st.title('Modelamiento de Iris by @L33PIF')
+    st.title('Te amo Vita')
     # titulo de sidebar
     st.sidebar.header('User Input Parameters')
 
