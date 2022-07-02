@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 import numpy as np
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 
@@ -14,7 +16,6 @@ opciones = ['Graficar puntos', 'Predicción de la tendencia']
 model = st.sidebar.selectbox('¿Qué operación desea realizar?', opciones)
 
 if data is not None:
-    st.success("Archivo cargado exitosamente")
     split_t = os.path.splitext(data.name)
     extension = split_t[1]
     if extension == ".csv":
@@ -31,24 +32,21 @@ if data is not None:
     all_columns = df.columns.to_list()
     select_columnX = st.selectbox("Seleccione X", all_columns)
     select_columnY = st.selectbox("Seleccione Y", all_columns)
+    select_degree = st.number_input("Ingrese grado polinomial", step=1)
 
-    x = np.asarray(df[select_columnX]).reshape(-1, 1)
-    y = df[select_columnY]
+    x = np.asarray(df[select_columnX])
+    y = np.asarray(df[select_columnY])
 
-    regr = linear_model.LinearRegression()
-    regr.fit(x, y)
-    y_pred = regr.predict(x)
+    x = x[:, np.newaxis]
+    y = y[:, np.newaxis]
 
-    if model == "Predicción de la tendencia":
-        select_predict = st.number_input("Ingrese valor a predecir", step=1)
-        st.subheader("Predicción:")
-        st.subheader(regr.predict([[select_predict]]))
-    elif model == "Graficar puntos":
-        fig, ax = plt.subplots()
-        ax.scatter(x, y, color='black')
-        ax.plot(x, y_pred, color='blue', linewidth=2)
+    polynomial_features = PolynomialFeatures(degree=select_degree)
+    X_TRANSF = polynomial_features.fit_transform(x)
 
-        st.pyplot(fig)
+    model = linear_model.LinearRegression()
+    model.fit(X_TRANSF, y)
 
-else:
-    st.error("Aún no se ha cargado un archivo")
+    Y_NEW = model.predict(X_TRANSF)
+    mse = mean_squared_error(y, Y_NEW)
+    rmse = np.sqrt(mean_squared_error(y, Y_NEW))
+    r2 = r2_score(y, Y_NEW)
