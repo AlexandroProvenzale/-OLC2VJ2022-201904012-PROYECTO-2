@@ -13,7 +13,7 @@ data = st.file_uploader("Cargar archivo", type=["csv", "json", "xls", "xlsx"], a
 # titulo de sidebar
 st.sidebar.header('Selección de operación')
 opciones = ['Graficar puntos', 'Predicción de la tendencia']
-model = st.sidebar.selectbox('¿Qué operación desea realizar?', opciones)
+sidebar = st.sidebar.selectbox('¿Qué operación desea realizar?', opciones)
 
 if data is not None:
     split_t = os.path.splitext(data.name)
@@ -40,13 +40,53 @@ if data is not None:
     x = x[:, np.newaxis]
     y = y[:, np.newaxis]
 
-    polynomial_features = PolynomialFeatures(degree=select_degree)
+    polynomial_features = PolynomialFeatures(degree=int(select_degree))
     X_TRANSF = polynomial_features.fit_transform(x)
 
     model = linear_model.LinearRegression()
     model.fit(X_TRANSF, y)
 
     Y_NEW = model.predict(X_TRANSF)
+
+    # Error cuadrático medio (MSE)
     mse = mean_squared_error(y, Y_NEW)
+    # Raíz del error cuadrático (RMSE)
     rmse = np.sqrt(mean_squared_error(y, Y_NEW))
+    # Coeficiente R^2
     r2 = r2_score(y, Y_NEW)
+
+    if sidebar == "Predicción de la tendencia":
+        # Prediction
+        x_new_min = x.min()
+        x_new_max = st.number_input("Ingrese valor a predecir", step=1)
+
+        X_NEW = np.linspace(x_new_min, x_new_max, 50)
+        X_NEW = X_NEW[:, np.newaxis]
+        X_NEW_TRANSF = polynomial_features.fit_transform(X_NEW)
+
+        st.subheader("Predicción:")
+        if x_new_max == 0:
+            st.warning("Aún no ingresa un dato para hacer predicción")
+        else:
+            temp = model.predict(X_NEW_TRANSF)
+            st.subheader(temp[len(temp) - 1])
+    elif sidebar == "Graficar puntos":
+        x_new_min = x.min()
+        x_new_max = x.max()
+
+        X_NEW = np.linspace(x_new_min, x_new_max, 50)
+        X_NEW = X_NEW[:, np.newaxis]
+        X_NEW_TRANSF = polynomial_features.fit_transform(X_NEW)
+
+        Y_NEW = model.predict(X_NEW_TRANSF)
+        fig, ax = plt.subplots()
+        plt.title("Regresión polinomial - " + split_t[0])
+        plt.plot(X_NEW, Y_NEW, color='coral', linewidth=2)
+        plt.grid()
+        plt.xlim(x_new_min, x_new_max)
+        plt.xlabel(select_columnX)
+        st.pyplot(fig)
+
+
+else:
+    st.error("Aún no se ha cargado un archivo")

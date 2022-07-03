@@ -42,13 +42,19 @@ if data is not None:
     if model == "Predicción de la tendencia":
         select_predict = st.number_input("Ingrese valor a predecir", step=1)
         st.subheader("Predicción:")
-        st.subheader(regr.predict([[select_predict]]))
+        if select_predict == 0:
+            st.warning("Aún no ingresa un dato para hacer predicción")
+        else:
+            st.subheader(regr.predict([[select_predict]]))
     elif model == "Graficar puntos":
         fig, ax = plt.subplots()
-        ax.scatter(x, y, color='black')
-        ax.plot(x, y_pred, color='blue', linewidth=2)
-
+        plt.title("Regresión lineal - " + split_t[0])
+        plt.xlabel(select_columnX)
+        plt.scatter(x, y, color='black')
+        plt.plot(x, y_pred, color='blue', linewidth=2)
         st.pyplot(fig)
-
+        if st.checkbox("Mostrar función"):
+            # st.write(regr.coef_)
+            st.latex(r"f(x) = " + "(" + str(regr.coef_[0]) + ")" + "x + " + "(" + str(regr.intercept_) + ")")
 else:
     st.error("Aún no se ha cargado un archivo")
