@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 
-st.title("Regresión lineal")
+st.title("Regresión polinomial")
 data = st.file_uploader("Cargar archivo", type=["csv", "json", "xls", "xlsx"], accept_multiple_files=False)
 
 # titulo de sidebar
@@ -69,7 +69,7 @@ if data is not None:
             st.warning("Aún no ingresa un dato para hacer predicción")
         else:
             temp = model.predict(X_NEW_TRANSF)
-            st.subheader(temp[len(temp) - 1])
+            st.subheader(str(temp[(len(temp) - 1)]))
     elif sidebar == "Graficar puntos":
         x_new_min = x.min()
         x_new_max = x.max()
@@ -89,4 +89,4 @@ if data is not None:
 
 
 else:
-    st.error("Aún no se ha cargado un archivo")
+    st.warning("Aún no se ha cargado un archivo")

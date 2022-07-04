@@ -45,7 +45,7 @@ if data is not None:
         if select_predict == 0:
             st.warning("Aún no ingresa un dato para hacer predicción")
         else:
-            st.subheader(regr.predict([[select_predict]]))
+            st.subheader(str(regr.predict([[select_predict]])[0]))
     elif model == "Graficar puntos":
         fig, ax = plt.subplots()
         plt.title("Regresión lineal - " + split_t[0])
@@ -57,4 +57,4 @@ if data is not None:
             # st.write(regr.coef_)
             st.latex(r"f(x) = " + "(" + str(regr.coef_[0]) + ")" + "x + " + "(" + str(regr.intercept_) + ")")
 else:
-    st.error("Aún no se ha cargado un archivo")
+    st.warning("Aún no se ha cargado un archivo")
