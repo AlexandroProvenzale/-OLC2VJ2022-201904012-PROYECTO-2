@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import os
 import numpy as np
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 
-st.title("Árboles de decisión")
+st.title("Redes neuronales")
 data = st.file_uploader("Cargar archivo", type=["csv", "json", "xls", "xlsx"], accept_multiple_files=False)
 
 if data is not None:
@@ -51,9 +51,23 @@ if data is not None:
 
     features = list(zip(*listaLE))
 
-    fig, ax = plt.subplots()
-    clf = DecisionTreeClassifier().fit(features, salida)
-    plot_tree(clf, filled=True)
-    st.pyplot(fig)
+    mlp = MLPClassifier(hidden_layer_sizes=(len(features), len(features), len(features)), max_iter=300, alpha=0.0001,
+                        solver='adam', random_state=21, tol=0.000000001)
+
+    mlp.fit(features, salida)
+
+    cols = st.columns(len(select_columnas))
+    prediction_boxes = []
+    for i, columna in enumerate(select_columnas):
+        with cols[i]:
+            prediction_boxes.append(st.selectbox(columna, listaEquivalente[i].keys()))
+    st.subheader(prediction_boxes)
+    if st.button("Evaluar"):
+        predictoria = []
+        for i, box in enumerate(prediction_boxes):
+            predictoria.append(listaEquivalente[i].get(box))
+        predicted = mlp.predict([[*predictoria]])
+        st.subheader("Predicción:")
+        st.subheader(list(listaSalida.keys())[list(listaSalida.values()).index(predicted)])
 else:
     st.warning("Aún no se ha cargado un archivo")

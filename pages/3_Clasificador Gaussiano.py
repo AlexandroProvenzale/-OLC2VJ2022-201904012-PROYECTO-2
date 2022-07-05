@@ -59,6 +59,7 @@ if data is not None:
     for i, columna in enumerate(select_columnas):
         with cols[i]:
             prediction_boxes.append(st.selectbox(columna, listaEquivalente[i].keys()))
+    st.subheader(str(prediction_boxes))
     if st.button("Evaluar"):
         predictoria = []
         for i, box in enumerate(prediction_boxes):
