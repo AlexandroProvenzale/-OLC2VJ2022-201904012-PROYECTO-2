@@ -15,6 +15,17 @@ st.sidebar.header('Selección de operación')
 opciones = ['Graficar puntos', 'Predicción de la tendencia']
 sidebar = st.sidebar.selectbox('¿Qué operación desea realizar?', opciones)
 
+st.markdown("""
+    <style>
+    .css-1lsmgbg.egzxvld0 {
+        visibility: hidden;
+    }
+    .css-14xtw13.e8zbici0 {
+        visibility: hidden;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 if data is not None:
     split_t = os.path.splitext(data.name)
     extension = split_t[1]
@@ -48,14 +59,14 @@ if data is not None:
 
     Y_NEW = model.predict(X_TRANSF)
 
-    # Error cuadrático medio (MSE)
-    mse = mean_squared_error(y, Y_NEW)
-    # Raíz del error cuadrático (RMSE)
-    rmse = np.sqrt(mean_squared_error(y, Y_NEW))
-    # Coeficiente R^2
-    r2 = r2_score(y, Y_NEW)
-
     if sidebar == "Predicción de la tendencia":
+        # Error cuadrático medio (MSE)
+        mse = mean_squared_error(y, Y_NEW)
+        # Raíz del error cuadrático (RMSE)
+        rmse = np.sqrt(mean_squared_error(y, Y_NEW))
+        # Coeficiente R^2
+        r2 = r2_score(y, Y_NEW)
+
         # Prediction
         x_new_min = x.min()
         x_new_max = st.number_input("Ingrese valor a predecir", step=1)
@@ -86,7 +97,22 @@ if data is not None:
         plt.xlim(x_new_min, x_new_max)
         plt.xlabel(select_columnX)
         st.pyplot(fig)
-
+        if st.checkbox("Mostrar función"):
+            coefs = model.coef_
+            co_latex = "f(x) = "
+            i = int(select_degree)
+            intercept = 0
+            for inter in model.intercept_:
+                intercept += inter
+            for cof in model.coef_[0, ::-1]:
+                if i > 0:
+                    co_latex += "(" + str(cof) + ")" + "x^" + str(i) + " + "
+                    i -= 1
+                else:
+                    co_latex += "(" + str(intercept) + ")"
+                    break
+            # st.write(regr.coef_)
+            st.latex(co_latex)
 
 else:
     st.warning("Aún no se ha cargado un archivo")

@@ -13,6 +13,17 @@ st.sidebar.header('Selección de operación')
 opciones = ['Graficar puntos', 'Predicción de la tendencia']
 model = st.sidebar.selectbox('¿Qué operación desea realizar?', opciones)
 
+st.markdown("""
+    <style>
+    .css-1lsmgbg.egzxvld0 {
+        visibility: hidden;
+    }
+    .css-14xtw13.e8zbici0 {
+        visibility: hidden;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 if data is not None:
     st.success("Archivo cargado exitosamente")
     split_t = os.path.splitext(data.name)

@@ -9,6 +9,17 @@ from sklearn import preprocessing
 st.title("Árboles de decisión")
 data = st.file_uploader("Cargar archivo", type=["csv", "json", "xls", "xlsx"], accept_multiple_files=False)
 
+st.markdown("""
+    <style>
+    .css-1lsmgbg.egzxvld0 {
+        visibility: hidden;
+    }
+    .css-14xtw13.e8zbici0 {
+        visibility: hidden;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 if data is not None:
     split_t = os.path.splitext(data.name)
     extension = split_t[1]
@@ -55,5 +66,20 @@ if data is not None:
     clf = DecisionTreeClassifier().fit(features, salida)
     plot_tree(clf, filled=True)
     st.pyplot(fig)
+
+    cols = st.columns(len(select_columnas))
+    prediction_boxes = []
+    for i, columna in enumerate(select_columnas):
+        with cols[i]:
+            prediction_boxes.append(st.selectbox(columna, listaEquivalente[i].keys()))
+    st.subheader(prediction_boxes)
+    if st.button("Evaluar"):
+        predictoria = []
+        for i, box in enumerate(prediction_boxes):
+            predictoria.append(listaEquivalente[i].get(box))
+        predicted = clf.predict([[*predictoria]])
+        st.subheader("Predicción:")
+        st.subheader(list(listaSalida.keys())[list(listaSalida.values()).index(predicted)])
+
 else:
     st.warning("Aún no se ha cargado un archivo")

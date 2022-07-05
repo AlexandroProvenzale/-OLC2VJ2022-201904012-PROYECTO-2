@@ -9,6 +9,17 @@ from sklearn import preprocessing
 st.title("Redes neuronales")
 data = st.file_uploader("Cargar archivo", type=["csv", "json", "xls", "xlsx"], accept_multiple_files=False)
 
+st.markdown("""
+    <style>
+    .css-1lsmgbg.egzxvld0 {
+        visibility: hidden;
+    }
+    .css-14xtw13.e8zbici0 {
+        visibility: hidden;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 if data is not None:
     split_t = os.path.splitext(data.name)
     extension = split_t[1]
