@@ -62,8 +62,7 @@ if data is not None:
 
     features = list(zip(*listaLE))
 
-    mlp = MLPClassifier(hidden_layer_sizes=(len(features), len(features), len(features)), max_iter=300, alpha=0.0001,
-                        solver='adam', random_state=21, tol=0.000000001)
+    mlp = MLPClassifier()
 
     mlp.fit(features, salida)
 
